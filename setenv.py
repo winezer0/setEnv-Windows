@@ -204,7 +204,7 @@ def reduce_path_by_extend(extend_env_name=PATH_EXTEND):
     need_move_values = []
     for env_value in path_env_values:
         f_env_value = str(env_value).lower()
-        not_move_keys = ["%", "windows", "python", "_mycmd", ]
+        not_move_keys = ["%", "c:\\windows", "python", "_mycmd", ]
         if any(key in f_env_value for key in not_move_keys):
             not_move_values.append(env_value)
         else:
