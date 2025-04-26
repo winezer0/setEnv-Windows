@@ -1,0 +1,26 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\.jar]
+@="jarfile"
+
+[HKEY_CLASSES_ROOT\jarfile]
+
+[HKEY_CLASSES_ROOT\jarfile\shell]
+
+[HKEY_CLASSES_ROOT\jarfile\shell\open]
+
+[HKEY_CLASSES_ROOT\jarfile\shell\open\command]
+@="\"C:\\Program_Base\\jdk11\\bin\\javaw.exe\" -jar \"%1\" %*"
+
+[HKEY_CLASSES_ROOT\Applications\javaw.exe]
+
+[HKEY_CLASSES_ROOT\Applications\javaw.exe\shell]
+
+[HKEY_CLASSES_ROOT\Applications\javaw.exe\shell\open]
+
+[HKEY_CLASSES_ROOT\Applications\javaw.exe\shell\open\command]
+@="\"C:\\Program_Base\\jdk11\\bin\\javaw.exe\" -jar \"%1\" %*"
+
+
+
+
