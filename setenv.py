@@ -187,6 +187,7 @@ def delete_env(env_name:str, remove_value:str):
 PATH = "PATH"
 PATH_EXTEND = "PATH_EXTEND"
 
+
 def reduce_path_by_extend(extend_env_name=PATH_EXTEND):
     # 优化PATH环境变量,将其中 非 C:\WINDOWS开头和非 %开头的变量 移动到 extend_env_name 中去, 缩短path长度
     path_env_values = to_dedup_env_values(get_env(PATH))
@@ -269,6 +270,24 @@ def load_env_from_json(env_name:str):
     print(f"success load env info [{env_name}] to [{file_path}]")
 
 
+
+def decode_env(env_name:str):
+    """把环境变量值中的变量都提取出来 不再进行使用"""
+    env_values = to_dedup_env_values(get_env(env_name))
+    dump_env_to_json(env_name)
+    print_json(env_values)
+
+    spread_values = []
+    for env_value in env_values:
+        if env_value.startswith("%") or env_value.startswith(r"C:\WINDOWS"):
+            spread_env_name = env_value.strip("%")
+            spread_values = to_dedup_env_values(get_env(spread_env_name))
+            spread_values.extend(spread_values)
+        else:
+            spread_values.append(env_value)
+
+    set_env(env_name, join_env_values(spread_values))
+
 def main():
     parser = argparse.ArgumentParser(description='Windows环境变量管理工具', epilog='请使用管理员权限运行!!!')
     
@@ -282,9 +301,9 @@ def main():
     parser.add_argument('-T', '--extend-sort',  help='排序extend_path环境变量内容', action='store_true', default=False)
     parser.add_argument('-A', '--extend-add',  help='追加extend_path环境变量内容', metavar='VALUE')
 
-
     parser.add_argument('-b', '--backup',  help='备份指定环境变量的值', metavar='NAME')
     parser.add_argument('-r', '--restore',  help='还原指定环境变量的值', metavar='NAME')
+    parser.add_argument('-D', '--decode',  help='解压指定环境变量的值', metavar='NAME')
 
     args = parser.parse_args()
 
@@ -328,6 +347,10 @@ def main():
 
     if args.restore:
         load_env_from_json(args.restore)
+
+    if args.decode:
+        decode_env(args.decode)
+
 
 if __name__ == '__main__':
     main()
