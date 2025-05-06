@@ -215,12 +215,12 @@ def reduce_path_by_extend(extend_env_name=PATH_EXTEND):
 
 
 def extend_path_add_value(env_value:str):
-    """增加 EXTEND_PATH """
+    """增加 PATH_EXTEND """
     add_env(PATH_EXTEND, env_value)
 
 
 def extend_path_sort_value():
-    """排序 EXTEND_PATH """
+    """排序 PATH_EXTEND """
     sort_env(PATH_EXTEND)
 
 def dump_env_to_json(env_name:str):
@@ -299,9 +299,9 @@ def main():
     parser.add_argument('-d', '--delete', help='刪除指定环境变量的值',  metavar=('NAME', 'VALUE'), nargs=2)
     parser.add_argument('-t', '--sort', help='环境变量排序去重', metavar='NAME')
 
-    parser.add_argument('-R', '--reduce-path',  help='通过新增extend_path缩减path内容', action='store_true', default=False)
-    parser.add_argument('-T', '--extend-sort',  help='排序extend_path环境变量内容', action='store_true', default=False)
-    parser.add_argument('-A', '--extend-add',  help='追加extend_path环境变量内容', metavar='VALUE')
+    parser.add_argument('-R', '--reduce-path',  help='通过新增[path_extend]环境变量缩减path内容', action='store_true', default=False)
+    parser.add_argument('-T', '--extend-sort',  help='排序[path_extend]环境变量内容', action='store_true', default=False)
+    parser.add_argument('-A', '--extend-add',  help='追加[path_extend]环境变量内容', metavar='VALUE')
 
     parser.add_argument('-b', '--backup',  help='备份指定环境变量的值', metavar='NAME')
     parser.add_argument('-r', '--restore',  help='还原指定环境变量的值', metavar='NAME')
@@ -335,12 +335,12 @@ def main():
         get_env(PATH_EXTEND)
 
     if args.extend_sort:
-        # 排序 EXTEND_PATH 的内容
+        # 排序 PATH_EXTEND 的内容
         extend_path_sort_value()
         get_env(PATH_EXTEND)
 
     if args.extend_add:
-        # 增加指定 值 到  EXTEND_PATH
+        # 增加指定 值 到  PATH_EXTEND
         extend_path_add_value(args.extend_add)
         get_env(PATH_EXTEND)
 
