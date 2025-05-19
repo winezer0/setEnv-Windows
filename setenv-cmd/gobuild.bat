@@ -46,6 +46,11 @@ REM 将连字符替换为空格以创建可迭代列表
 set "OS_LIST=%OS_LIST:-= %"
 set "ARCH_LIST=%ARCH_LIST:-= %"
 
+REM 创建输出目录
+set "OUTPUT_DIR=%OUTNAME%"
+if exist "%OUTPUT_DIR%" rd /s /q "%OUTPUT_DIR%"
+md "%OUTPUT_DIR%"
+
 echo Building with SOURCE="%SOURCE%"
 echo Building with OUTNAME="%OUTNAME%"
 echo Building with OS_LIST="%OS_LIST%"
@@ -54,17 +59,12 @@ echo Building with CGO_ENABLED=%CGO_ENABLED%
 
 for %%o in (%OS_LIST%) do (
     for %%a in (%ARCH_LIST%) do (
-        REM Darwin 不支持 386 架构
-        if /i "%%o"=="darwin" if /i "%%a"=="386" (
-            echo Skipping unsupported pair: %%o/%%a
-            continue
-        )
 
         set "EXT="
         if /i "%%o"=="windows" set EXT=.exe
 
         echo Building %%o-%%a ...
-        set "OUTFILE=%OUTNAME%-%%o-%%a%EXT%"
+        set "OUTFILE=%OUTPUT_DIR%\%OUTNAME%-%%o-%%a%EXT%"
 
         REM 设置环境变量
         set "GOOS=%%o"
@@ -82,4 +82,14 @@ for %%o in (%OS_LIST%) do (
 
 echo.
 echo All builds completed successfully.
+
+REM 打包为 ZIP 文件（使用 Windows 自带的 PowerShell）
+echo Packing to %OUTNAME%.zip ...
+if exist "%OUTNAME%.zip" del "%OUTNAME%.zip"
+powershell.exe Compress-Archive -Path "%OUTPUT_DIR%" -DestinationPath "%OUTNAME%.zip" -Force
+
+echo.
+echo Output files saved in folder: %cd%\%OUTPUT_DIR%
+echo Archive created: %cd%\%OUTNAME%.zip
+
 exit /b 0
