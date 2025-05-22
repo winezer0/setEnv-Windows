@@ -15,7 +15,7 @@ set "DEFAULT_ARCH_LIST=amd64"
 REM 检查并设置参数
 if "%1" == "" (
     echo Usage: gobuild.bat ^<source_path^> ^<output_name^> [^<os_list^> ^<arch_list^>] [^--cgo^]
-    echo Example: gobuild.bat . myapp windows-linux darwin amd64-386 --cgo
+    echo Example: gobuild.bat . myapp windows-linux-darwin amd64-386 --cgo
     exit /b 1
 )
 
