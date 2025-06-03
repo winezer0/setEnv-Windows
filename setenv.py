@@ -274,7 +274,7 @@ def load_env_from_json(env_name:str):
 
 
 def decode_env(env_name:str):
-    """把环境变量值中的变量都提取出来 不再进行使用"""
+    """把环境变量值中的%变量%都提取出来 不再进行使用"""
     env_values = to_dedup_env_values(get_env(env_name))
     dump_env_to_json(env_name)
     print_json(env_values)
@@ -299,13 +299,14 @@ def main():
     parser.add_argument('-d', '--delete', help='刪除指定环境变量的值',  metavar=('NAME', 'VALUE'), nargs=2)
     parser.add_argument('-t', '--sort', help='环境变量排序去重', metavar='NAME')
 
-    parser.add_argument('-R', '--reduce-path',  help='通过新增[path_extend]环境变量缩减path内容', action='store_true', default=False)
+    parser.add_argument('-R', '--reduce-path',  help='新增[path_extend]环境变量缩减PATH内容', action='store_true', default=False)
     parser.add_argument('-T', '--extend-sort',  help='排序[path_extend]环境变量内容', action='store_true', default=False)
     parser.add_argument('-A', '--extend-add',  help='追加[path_extend]环境变量内容', metavar='VALUE')
 
-    parser.add_argument('-b', '--backup',  help='备份指定环境变量的值', metavar='NAME')
-    parser.add_argument('-r', '--restore',  help='还原指定环境变量的值', metavar='NAME')
-    parser.add_argument('-D', '--decode',  help='解压指定环境变量的值', metavar='NAME')
+    parser.add_argument('-b', '--backup', help='dump_env_to_json 备份指定环境变量的值', metavar='NAME')
+    parser.add_argument('-r', '--restore', help='load_env_from_json 还原指定环境变量的值', metavar='NAME')
+
+    parser.add_argument('-D', '--decode',  help='解压指定环境变量中所有%变量%的值 (例如把PATH中%变量%对应的值直接保存到PATH)', metavar='NAME')
 
     args = parser.parse_args()
 
