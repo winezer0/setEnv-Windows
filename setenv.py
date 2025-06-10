@@ -290,23 +290,63 @@ def decode_env(env_name:str):
 
     set_env(env_name, join_env_values(spread_values))
 
+
+def check_env(env_name: str, delete: bool):
+    """
+    检查指定的环境变量，如果是路径的话就检查路径是否存在，不存在的话就 delete。
+    :param env_name: 环境变量名称
+    :param delete: 是否删除不存在的路径
+    """
+    env_values = to_dedup_env_values(get_env(env_name))
+    if not env_values:
+        print(f"环境变量 [{env_name}] 为空或不存在！")
+        return
+
+    invalid_values = []
+    for value in env_values:
+        # 只检查本地路径，不检查 %VAR% 变量
+        if value.startswith('%') and value.endswith('%'):
+            continue
+        # 只检查存在盘符的路径
+        if os.path.isabs(value):
+            if not os.path.exists(value):
+                print(f"无效路径: {value}")
+                invalid_values.append(value)
+        else:
+            # 不是绝对路径，可能是相对路径或命令，跳过
+            continue
+
+    if not invalid_values:
+        print(f"[{env_name}] 中所有路径均有效。")
+    else:
+        print(f"[{env_name}] 中无效路径如下：")
+        for v in invalid_values:
+            print(f"  {v}")
+        if delete:
+            delete_env(env_name, join_env_values(invalid_values))
+            print(f"已从 [{env_name}] 中删除无效路径。")
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Windows环境变量管理工具', epilog='请使用管理员权限运行!!!')
-    
-    parser.add_argument('-g', '--get', help='获取指定环境变量的值', metavar='NAME')
-    parser.add_argument('-s', '--set', help='设置指定环境变量的值', metavar=('NAME', 'VALUE'), nargs=2)
-    parser.add_argument('-a', '--add',  help='追加指定环境变量的值', metavar=('NAME', 'VALUE'), nargs=2)
-    parser.add_argument('-d', '--delete', help='刪除指定环境变量的值',  metavar=('NAME', 'VALUE'), nargs=2)
-    parser.add_argument('-t', '--sort', help='环境变量排序去重', metavar='NAME')
+    parser = argparse.ArgumentParser(description=r'Windows环境变量管理工具', epilog=r'请使用管理员权限运行!!!')
+    parser.add_argument('-g', '--get', help=r'获取指定环境变量的值', metavar='NAME')
+    parser.add_argument('-s', '--set', help=r'设置指定环境变量的值', metavar=('NAME', 'VALUE'), nargs=2)
+    parser.add_argument('-a', '--add',  help=r'追加指定环境变量的值', metavar=('NAME', 'VALUE'), nargs=2)
+    parser.add_argument('-d', '--delete', help=r'刪除指定环境变量的值',  metavar=('NAME', 'VALUE'), nargs=2)
+    parser.add_argument('-t', '--sort', help=r'环境变量排序去重', metavar='NAME')
 
-    parser.add_argument('-R', '--reduce-path',  help='新增[path_extend]环境变量缩减PATH内容', action='store_true', default=False)
-    parser.add_argument('-T', '--extend-sort',  help='排序[path_extend]环境变量内容', action='store_true', default=False)
-    parser.add_argument('-A', '--extend-add',  help='追加[path_extend]环境变量内容', metavar='VALUE')
+    parser.add_argument('-R', '--reduce-path',  help=r'新增[path_extend]环境变量缩减PATH内容', action='store_true', default=False)
+    parser.add_argument('-T', '--extend-sort',  help=r'排序[path_extend]环境变量内容', action='store_true', default=False)
+    parser.add_argument('-A', '--extend-add',  help=r'追加[path_extend]环境变量内容', metavar='VALUE')
 
-    parser.add_argument('-b', '--backup', help='dump_env_to_json 备份指定环境变量的值', metavar='NAME')
-    parser.add_argument('-r', '--restore', help='load_env_from_json 还原指定环境变量的值', metavar='NAME')
+    parser.add_argument('-b', '--backup', help=r'dump_env_to_json 备份指定环境变量的值', metavar='NAME')
+    parser.add_argument('-r', '--restore', help=r'load_env_from_json 还原指定环境变量的值', metavar='NAME')
 
-    parser.add_argument('-D', '--decode',  help='解压指定环境变量中所有%变量%的值 (例如把PATH中%变量%对应的值直接保存到PATH)', metavar='NAME')
+    parser.add_argument('-D', '--decode',  help=r'解压指定环境变量中所有%%变量%%的值 (例如把PATH中%%变量%%对应的值直接保存到PATH)', metavar='NAME')
+
+    # 新增参数
+    parser.add_argument('-c', '--check', help=r'检查指定环境变量中的路径是否存在', metavar='NAME')
+    parser.add_argument('-C', '--check-delete', help=r'检查时自动删除无效路径', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -353,6 +393,9 @@ def main():
 
     if args.decode:
         decode_env(args.decode)
+
+    if args.check:
+        check_env(args.check, args.check_delete)
 
 
 if __name__ == '__main__':
