@@ -68,8 +68,8 @@ for %%o in (%OS_LIST%) do (
         set "EXT="
         if /i "%%o"=="windows" set EXT=.exe
 
-        echo Building %%o-%%a ...
-        set "OUTFILE=%OUTPUT_DIR%\%OUTNAME%-%%o-%%a%EXT%"
+        echo Building %OUTNAME%-%%o-%%a!EXT!
+        set "OUTFILE=%OUTPUT_DIR%\%OUTNAME%-%%o-%%a!EXT!"
 
         REM 设置环境变量
         set "GOOS=%%o"
